@@ -37,4 +37,11 @@ abstract class AbstractMessage implements MessageInterface
 	{
 
 	}
+
+	public function validateHeader($header, $content)
+	{
+		// Validate against self::HEADER_PARAMETERS
+		// if false, log error?
+		return true;
+	}
 }

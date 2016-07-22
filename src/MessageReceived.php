@@ -24,7 +24,7 @@
 namespace Sms;
 
 /**
- * Message received value object
+ * Message received object
  *
  * @author Liam Jones <liam@plumbnation.co.uk>
  * @since  1.0.0
@@ -32,24 +32,96 @@ namespace Sms;
 class MessageReceived extends AbstractMessage implements MessageInterface
 {
 	/**
+	 * Filepath
+	 *
+	 * @var string
+	 */
+	private $filepath;
+
+	/**
+	 * Message
+	 *
+	 * @var string
+	 */
+	private $message;
+
+	/**
+	 * From
+	 *
+	 * @var string  Telephone number
+	 */
+	private $from;
+
+	/**
+	 * SMS Headers
+	 *
+	 * @var stdClass
+	 */
+	private $headers;
+
+	/**
 	 * Class constructor
 	 *
+	 * @param string $filepath
 	 * @param string $message
 	 * @param string $from
 	 * @param array  $optHeaders
 	 *
 	 * @return Sms\MessageRecieved
 	 */
-	private function __construct($message, $from, array $optHeaders = null)
-	{
+	private function __construct(
+		$filepath,
+		$message,
+		$from,
+		array $optHeaders = null
+	) {
 		$this->setMessage($message);
-		$this->setTo((array) $message);
+		$this->setFrom($message);
 
 		if (!is_null($optHeaders)) {
-			foreach ($optHeaders as $header => $value) {
-				$this->setHeader($header, $value);
+			foreach ($optHeaders as $header => $content) {
+				$this->setHeader($header, $content);
 			}
 		}
+	}
+
+	/**
+	 * Set message
+	 *
+	 * @param string $message
+	 */
+	private function setMessage($message)
+	{
+		$this->message = $message;
+	}
+
+	/**
+	 * Set from
+	 *
+	 * @param string $from
+	 */
+	private function setFrom($from)
+	{
+		$this->from = $from;
+	}
+
+	/**
+	 * Set headers
+	 *
+	 * @param string $header
+	 * @param string $content
+	 */
+	private function setHeader($header, $content)
+	{
+		if (is_null($this->headers)) {
+			$this->headers = new \stdClass;
+		}
+
+		if (!$this->validateHeader($header, $content)) {
+			return false;
+		}
+
+		$this->headers->{$header} = $content;
 	}
 
 	/**
@@ -59,34 +131,59 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	 *
 	 * @return array             [(string) message, (string) from, (array) headers]
 	 */
-	private function parseSmsFromPointer($pointer)
+	private static function parseFile($path)
 	{
+		if (($pointer = @fopen($path, 'r')) === false) {
+			throw new SmsMessageException(
+				"File is not readable."
+			);
+		}
+
+		$from    = "";
+		$headers = [];
+
+		while (($line = trim(fgets($pointer))) !== false) {
+			if (empty($line)) {
+				break;
+			}
+
+			$line = explode(': ', trim($line));
+
+			switch ($line[0]) {
+				case "From_SMSC":
+					$from = $line[1];
+					break;
+				default:
+					$headers[$line[0]] = $line[1];
+			}
+		}
+
+		$message = fgets($pointer);
+
 		return [
-			$message, $from, $headers
+			$path, $message, $from, $headers
 		];
 	}
 
 	/**
-	 * Create new instance of self from file pointer
+	 * Create new instance of self from filepath
 	 *
-	 * @param  resource $pointer
+	 * @param  string $pointer
 	 *
 	 * @return Sms\MessageReceived
 	 *
 	 * @throws Sms\SmsMessageException
 	 */
-	public static function createFromFilePointer($pointer)
+	public static function createFromPath($path)
 	{
-		if (!is_resource($pointer)) {
+		if (!file_exists($path)) {
 			throw new SmsMessageException(
-				"From pointer expects a valid file handler returned from the likes of fopen."
+				"File does not exist."
 			);
 		}
 
-		rewind($pointer);
-
 		return new self(
-			...$this->parseSmsFromPointer($pointer)
+			...self::parseFile($path)
 		);
 	}
 }
