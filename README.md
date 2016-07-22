@@ -6,4 +6,6 @@ This library is a _pure PHP_ wrapper for interacting with Keijo Kasvi's [SMS Ser
 
 This library is very much in development and will remain a quick and dirty solution, basically, I do not recommend use **at all**.
 
-**Requirements: PHP 5.3** due to the use of `namespaces` and **[SMS Server Tools 3 SMS gateway](http://smstools3.kekekasvi.com/).**
+**Requirements:**
+* **PHP ^5.6** due to the use of `namespaces`, argument unpacking and more.
+* **[SMS Server Tools 3 SMS gateway](http://smstools3.kekekasvi.com/).**
