@@ -7,19 +7,22 @@ use org\bovigo\vfs\vfsStream;
 
 class MessageReceivedTest extends TestCase
 {
-	const TEST_MESSAGE = "From: From Three
-From_TOA: D0 alphanumeric, unknown
-From_SMSC: 447782000808
-Sent: 16-07-15 16:58:23
-Received: 16-07-15 16:02:22
-Subject: GSM1
-Modem: GSM1
-IMSI: 234200003367431
-Report: yes
-Alphabet: ISO
-Length: 159
+	const TEST_FROM_SMSC = '447782000808';
 
-Maximise your top-up with an All-in-One Add-on. You could get All-you-can-eat data & use your allowance in Feel at Home destinations. bit.ly/1KCRBck Optout@My3";
+	const TEST_HEADERS = [
+		'From'      => 'From Three',
+		'From_TOA'  => 'D0 alphanumeric, unknown',
+		'Sent'      => '16-07-15 16:58:23',
+		'Received'  => '16-07-15 16:02:22',
+		'Subject'   => 'GSM1',
+		// 'Modem'     => 'GSM1',
+		'IMSI'      => '234200003367431',
+		'Report'    => 'yes',
+		'Alphabet'  => 'ISO',
+		'Length'    => '159'
+	];
+
+	const TEST_MESSAGE = "Maximise your top-up with an All-in-One Add-on. You could get All-you-can-eat data & use your allowance in Feel at Home destinations. bit.ly/1KCRBck Optout@My3";
 
 	/**
 	 * instance to test
@@ -42,12 +45,39 @@ Maximise your top-up with an All-in-One Add-on. You could get All-you-can-eat da
 	{
 		$this->root = vfsStream::setup();
 		$this->file = vfsStream::newFile('received-message-test.txt');
-		$this->file->setContent(self::TEST_MESSAGE);
+		$this->file->setContent($this->buildFileContent());
 		$this->root->addChild($this->file);
 	}
 
-	public function tearDown()
+	/**
+	 * Build an SMS Message file as though received directly from SMS Server Tools
+	 *
+	 * @return string
+	 */
+	public function buildFileContent()
 	{
+		$str = "From_SMSC: ".self::TEST_FROM_SMSC."\n";
+		foreach (self::TEST_HEADERS as $header => $value) {
+			$str .= "{$header}: {$value}\n";
+		}
+		return $str . "\n" . self::TEST_MESSAGE;
+	}
+
+	/**
+	 * Return array of headers to be used as a data provider
+	 *
+	 * @return array
+	 */
+	public function headerIterator()
+	{
+		$arr = [];
+		foreach (self::TEST_HEADERS as $key => $value) {
+			$arr[] = [
+				'key'   => $key,
+				'value' => $value
+			];
+		}
+		return $arr;
 	}
 
 	/**
@@ -56,14 +86,14 @@ Maximise your top-up with an All-in-One Add-on. You could get All-you-can-eat da
 	 */
 	public function testReceivedMessageFileDoesNotExist()
 	{
-		MessageReceived::createFromPath("vfs://received-message-test.txt");
+		MessageReceived::createFromPath("vfs://undefined-file.txt");
 	}
 
 	/**
      * @expectedException        Sms\SmsMessageException
      * @expectedExceptionMessage File is not readable.
 	 */
-	public function testReceivedMessageIsNotReadable()
+	public function testReceivedMessageFileIsNotReadable()
 	{
 		$this->file->chmod(0000);
 
@@ -78,5 +108,42 @@ Maximise your top-up with an All-in-One Add-on. You could get All-you-can-eat da
 			MessageReceived::class,
 			$message
 		);
+
+		return $message;
+	}
+
+	/**
+	 * @depends testCreateMessageRecievedFromPath
+	 */
+	public function testMessageReceivedMessagePropertyContent($message)
+	{
+		$this->assertSame(self::TEST_MESSAGE, $message->getMessage());
+	}
+
+	/**
+	 * @depends testCreateMessageRecievedFromPath
+	 */
+	public function testMessageFromSmscPropertyContent($message)
+	{
+		$this->assertSame(self::TEST_FROM_SMSC, $message->getFromSmsc());
+	}
+
+	/**
+	 * @depends testCreateMessageRecievedFromPath
+	 */
+	public function testInvalidMessageHeader($message)
+	{
+		$this->assertNull($message->getHeader("none-existent-header"));
+	}
+
+	/**
+	 * @dataProvider headerIterator
+	 * @depends testCreateMessageRecievedFromPath
+	 */
+	public function testGetMessageHeader()
+	{
+		$args = func_get_args();
+
+		$this->assertSame($args[1], $args[2]->getHeader($args[0]));
 	}
 }

@@ -12,11 +12,11 @@ interface MessageInterface
 	public function getTo();
 
 	/**
-	 * Get From Field
+	 * Get From SMSC Field
 	 *
 	 * @return string
 	 */
-	public function getFrom();
+	public function getFromSmsc();
 
 	/**
 	 * Get From Field

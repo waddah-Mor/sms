@@ -31,40 +31,57 @@ namespace Sms;
  */
 class MessageReceived extends AbstractMessage implements MessageInterface
 {
+	const HEADER_PARAMETERS = [
+		'From'      => [],
+		'From_TOA'  => [],
+		'From_SMSC' => [],
+		'Subject'   => [],
+		'IMSI'      => [],
+		'Report'    => [],
+		'Replace'   => [],
+		'Sent'      => [],
+		'Received'  => [],
+		'Alphabet'  => [],
+		'UDH'       => [],
+		'UDH-DATA'  => [],
+		'Length'    => [],
+		'Flash'     => []
+	];
+
 	/**
 	 * Filepath
 	 *
 	 * @var string
 	 */
-	private $filepath;
+	protected $filepath;
 
 	/**
 	 * Message
 	 *
 	 * @var string
 	 */
-	private $message;
+	protected $message;
 
 	/**
-	 * From
+	 * From SMSC
 	 *
 	 * @var string  Telephone number
 	 */
-	private $from;
+	protected $fromSmsc;
 
 	/**
 	 * SMS Headers
 	 *
 	 * @var stdClass
 	 */
-	private $headers;
+	protected $headers;
 
 	/**
 	 * Class constructor
 	 *
 	 * @param string $filepath
 	 * @param string $message
-	 * @param string $from
+	 * @param string $fromSmsc
 	 * @param array  $optHeaders
 	 *
 	 * @return Sms\MessageRecieved
@@ -72,11 +89,11 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	private function __construct(
 		$filepath,
 		$message,
-		$from,
+		$fromSmsc,
 		array $optHeaders = null
 	) {
 		$this->setMessage($message);
-		$this->setFrom($message);
+		$this->setFromSmsc($fromSmsc);
 
 		if (!is_null($optHeaders)) {
 			foreach ($optHeaders as $header => $content) {
@@ -96,13 +113,13 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	}
 
 	/**
-	 * Set from
+	 * Set From SMSC
 	 *
-	 * @param string $from
+	 * @param string $fromSmsc
 	 */
-	private function setFrom($from)
+	private function setFromSmsc($fromSmsc)
 	{
-		$this->from = $from;
+		$this->fromSmsc = $fromSmsc;
 	}
 
 	/**
@@ -129,7 +146,7 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	 *
 	 * @param  resource $pointer
 	 *
-	 * @return array             [(string) message, (string) from, (array) headers]
+	 * @return array             [(string) message, (string) fromSmsc, (array) headers]
 	 */
 	private static function parseFile($path)
 	{
@@ -139,7 +156,7 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 			);
 		}
 
-		$from    = "";
+		$fromSmsc    = "";
 		$headers = [];
 
 		while (($line = trim(fgets($pointer))) !== false) {
@@ -151,7 +168,7 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 
 			switch ($line[0]) {
 				case "From_SMSC":
-					$from = $line[1];
+					$fromSmsc = $line[1];
 					break;
 				default:
 					$headers[$line[0]] = $line[1];
@@ -161,7 +178,7 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 		$message = fgets($pointer);
 
 		return [
-			$path, $message, $from, $headers
+			$path, $message, $fromSmsc, $headers
 		];
 	}
 

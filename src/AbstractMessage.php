@@ -4,8 +4,6 @@ namespace Sms;
 
 abstract class AbstractMessage implements MessageInterface
 {
-	const HEADER_PARAMETERS = [];
-
 	/**
 	 * {@inheritDoc}
 	 */
@@ -17,9 +15,9 @@ abstract class AbstractMessage implements MessageInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getFrom()
+	public function getFromSmsc()
 	{
-
+		return $this->fromSmsc;
 	}
 
 	/**
@@ -27,7 +25,7 @@ abstract class AbstractMessage implements MessageInterface
 	 */
 	public function getMessage()
 	{
-
+		return $this->message;
 	}
 
 	/**
@@ -35,13 +33,20 @@ abstract class AbstractMessage implements MessageInterface
 	 */
 	public function getHeader($header)
 	{
-
+		if (
+			property_exists($this->headers, $header)
+			&& array_key_exists($header, static::HEADER_PARAMETERS)
+		) {
+			return $this->headers->{$header};
+		}
 	}
 
-	public function validateHeader($header, $content)
+	protected function validateHeader($header, $content)
 	{
-		// Validate against self::HEADER_PARAMETERS
-		// if false, log error?
+		if (!array_key_exists($header, static::HEADER_PARAMETERS)) {
+			return false;
+		}
+
 		return true;
 	}
 }
