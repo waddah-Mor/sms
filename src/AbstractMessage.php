@@ -7,9 +7,9 @@ abstract class AbstractMessage implements MessageInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getMessage()
+	public function getBody()
 	{
-		return $this->message;
+		return $this->body;
 	}
 
 	/**

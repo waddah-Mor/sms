@@ -56,11 +56,11 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	protected $filepath;
 
 	/**
-	 * Message
+	 * Body
 	 *
 	 * @var string
 	 */
-	protected $message;
+	protected $body;
 
 	/**
 	 * SMS Headers
@@ -73,17 +73,17 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	 * Class constructor
 	 *
 	 * @param string $filepath
-	 * @param string $message
+	 * @param string $body
 	 * @param array  $optHeaders
 	 *
 	 * @return Sms\MessageRecieved
 	 */
 	private function __construct(
 		$filepath,
-		$message,
+		$body,
 		array $optHeaders = null
 	) {
-		$this->setMessage($message);
+		$this->setBody($body);
 
 		if (!is_null($optHeaders)) {
 			foreach ($optHeaders as $header => $content) {
@@ -93,13 +93,13 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	}
 
 	/**
-	 * Set message
+	 * Set body
 	 *
-	 * @param string $message
+	 * @param string $body
 	 */
-	private function setMessage($message)
+	private function setBody($body)
 	{
-		$this->message = $message;
+		$this->body = $body;
 	}
 
 	/**
@@ -126,7 +126,7 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	 *
 	 * @param  resource $pointer
 	 *
-	 * @return array             [(string) message, (string) fromSmsc, (array) headers]
+	 * @return array             [(string) body, (string) fromSmsc, (array) headers]
 	 */
 	private static function parseFile($path)
 	{
@@ -148,10 +148,10 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 			$headers[$line[0]] = $line[1];
 		}
 
-		$message = fgets($pointer);
+		$body = fgets($pointer);
 
 		return [
-			$path, $message, $headers
+			$path, $body, $headers
 		];
 	}
 

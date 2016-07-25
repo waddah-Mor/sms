@@ -2,8 +2,12 @@
 
 namespace Sms;
 
-class Message extends AbstractMessage implements MessageInterface
+final class Message extends AbstractMessage implements MessageInterface
 {
+	protected $message;
+	protected $to;
+	protected $headers;
+
 	public function __construct($message, $to, array $optHeaders = null)
 	{
 		$this->setMessage($message);
@@ -18,6 +22,5 @@ class Message extends AbstractMessage implements MessageInterface
 
 	public function flatten()
 	{
-
 	}
 }

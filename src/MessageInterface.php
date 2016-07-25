@@ -5,11 +5,11 @@ namespace Sms;
 interface MessageInterface
 {
 	/**
-	 * Get From Field
+	 * Get Body
 	 *
 	 * @return string
 	 */
-	public function getMessage();
+	public function getBody();
 
 	/**
 	 * Get From Field

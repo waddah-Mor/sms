@@ -116,7 +116,7 @@ class MessageReceivedTest extends TestCase
 	 */
 	public function testMessageReceivedMessagePropertyContent($message)
 	{
-		$this->assertSame(self::TEST_MESSAGE, $message->getMessage());
+		$this->assertSame(self::TEST_MESSAGE, $message->getBody());
 	}
 
 	/**
