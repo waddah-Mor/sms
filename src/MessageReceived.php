@@ -32,20 +32,20 @@ namespace Sms;
 class MessageReceived extends AbstractMessage implements MessageInterface
 {
 	const HEADER_PARAMETERS = [
-		'From'      => [],
-		'From_TOA'  => [],
-		'From_SMSC' => [],
-		'Subject'   => [],
-		'IMSI'      => [],
-		'Report'    => [],
-		'Replace'   => [],
-		'Sent'      => [],
-		'Received'  => [],
-		'Alphabet'  => [],
-		'UDH'       => [],
-		'UDH-DATA'  => [],
-		'Length'    => [],
-		'Flash'     => []
+		'From'      => [ 'type' => 'stringsmall' ],
+		'From_TOA'  => [ 'type' => '' ],
+		'From_SMSC' => [ 'type' => '' ],
+		'Subject'   => [ 'type' => '' ],
+		'IMSI'      => [ 'type' => '' ],
+		'Report'    => [ 'type' => '' ],
+		'Replace'   => [ 'type' => '' ],
+		'Sent'      => [ 'type' => '' ],
+		'Received'  => [ 'type' => '' ],
+		'Alphabet'  => [ 'type' => '' ],
+		'UDH'       => [ 'type' => '' ],
+		'UDH-DATA'  => [ 'type' => '' ],
+		'Length'    => [ 'type' => '' ],
+		'Flash'     => [ 'type' => '' ]
 	];
 
 	/**

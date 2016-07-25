@@ -25,12 +25,27 @@ abstract class AbstractMessage implements MessageInterface
 		}
 	}
 
+	/**
+	 * Validate SMS Header
+	 *
+	 * @param  string $header
+	 * @param  string $content
+	 *
+	 * @return boolean
+	 */
 	protected function validateHeader($header, $content)
 	{
-		if (!array_key_exists($header, static::HEADER_PARAMETERS)) {
+		if (!($properties = static::HEADER_PARAMETERS[$header])) {
 			return false;
 		}
 
-		return true;
+		switch ($properties['type']) {
+			case 'stringsmall':
+				return is_string($properties['type'])
+					&& ($strlen = strlen($content)) > 0
+					&& $strlen < 255;
+			default:
+				return true;
+		}
 	}
 }
