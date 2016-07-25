@@ -7,22 +7,6 @@ abstract class AbstractMessage implements MessageInterface
 	/**
 	 * {@inheritDoc}
 	 */
-	public function getTo()
-	{
-
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
-	public function getFromSmsc()
-	{
-		return $this->fromSmsc;
-	}
-
-	/**
-	 * {@inheritDoc}
-	 */
 	public function getMessage()
 	{
 		return $this->message;

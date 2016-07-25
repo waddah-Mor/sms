@@ -7,11 +7,10 @@ use org\bovigo\vfs\vfsStream;
 
 class MessageReceivedTest extends TestCase
 {
-	const TEST_FROM_SMSC = '447782000808';
-
 	const TEST_HEADERS = [
 		'From'      => 'From Three',
 		'From_TOA'  => 'D0 alphanumeric, unknown',
+		'From_SMSC' => '447782000808',
 		'Sent'      => '16-07-15 16:58:23',
 		'Received'  => '16-07-15 16:02:22',
 		'Subject'   => 'GSM1',
@@ -56,7 +55,7 @@ class MessageReceivedTest extends TestCase
 	 */
 	public function buildFileContent()
 	{
-		$str = "From_SMSC: ".self::TEST_FROM_SMSC."\n";
+		$str = "";
 		foreach (self::TEST_HEADERS as $header => $value) {
 			$str .= "{$header}: {$value}\n";
 		}
@@ -100,7 +99,7 @@ class MessageReceivedTest extends TestCase
 		MessageReceived::createFromPath($this->file->url());
 	}
 
-	public function testCreateMessageRecievedFromPath()
+	public function testCreateMessageReceivedFromPath()
 	{
 		$message = MessageReceived::createFromPath($this->file->url());
 
@@ -113,7 +112,7 @@ class MessageReceivedTest extends TestCase
 	}
 
 	/**
-	 * @depends testCreateMessageRecievedFromPath
+	 * @depends testCreateMessageReceivedFromPath
 	 */
 	public function testMessageReceivedMessagePropertyContent($message)
 	{
@@ -121,15 +120,7 @@ class MessageReceivedTest extends TestCase
 	}
 
 	/**
-	 * @depends testCreateMessageRecievedFromPath
-	 */
-	public function testMessageFromSmscPropertyContent($message)
-	{
-		$this->assertSame(self::TEST_FROM_SMSC, $message->getFromSmsc());
-	}
-
-	/**
-	 * @depends testCreateMessageRecievedFromPath
+	 * @depends testCreateMessageReceivedFromPath
 	 */
 	public function testInvalidMessageHeader($message)
 	{
@@ -138,12 +129,20 @@ class MessageReceivedTest extends TestCase
 
 	/**
 	 * @dataProvider headerIterator
-	 * @depends testCreateMessageRecievedFromPath
+	 * @depends testCreateMessageReceivedFromPath
 	 */
 	public function testGetMessageHeader()
 	{
 		$args = func_get_args();
 
 		$this->assertSame($args[1], $args[2]->getHeader($args[0]));
+	}
+
+	/**
+	 * @depends  testCreateMessageReceivedFromPath
+	 */
+	public function testFromSmscHeaderIsPresent($message)
+	{
+		$this->assertNotNull($message->getHeader('From_SMSC'));
 	}
 }

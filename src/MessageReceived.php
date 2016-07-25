@@ -63,13 +63,6 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	protected $message;
 
 	/**
-	 * From SMSC
-	 *
-	 * @var string  Telephone number
-	 */
-	protected $fromSmsc;
-
-	/**
 	 * SMS Headers
 	 *
 	 * @var stdClass
@@ -81,7 +74,6 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	 *
 	 * @param string $filepath
 	 * @param string $message
-	 * @param string $fromSmsc
 	 * @param array  $optHeaders
 	 *
 	 * @return Sms\MessageRecieved
@@ -89,11 +81,9 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	private function __construct(
 		$filepath,
 		$message,
-		$fromSmsc,
 		array $optHeaders = null
 	) {
 		$this->setMessage($message);
-		$this->setFromSmsc($fromSmsc);
 
 		if (!is_null($optHeaders)) {
 			foreach ($optHeaders as $header => $content) {
@@ -110,16 +100,6 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	private function setMessage($message)
 	{
 		$this->message = $message;
-	}
-
-	/**
-	 * Set From SMSC
-	 *
-	 * @param string $fromSmsc
-	 */
-	private function setFromSmsc($fromSmsc)
-	{
-		$this->fromSmsc = $fromSmsc;
 	}
 
 	/**
@@ -156,7 +136,6 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 			);
 		}
 
-		$fromSmsc    = "";
 		$headers = [];
 
 		while (($line = trim(fgets($pointer))) !== false) {
@@ -166,19 +145,13 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 
 			$line = explode(': ', trim($line));
 
-			switch ($line[0]) {
-				case "From_SMSC":
-					$fromSmsc = $line[1];
-					break;
-				default:
-					$headers[$line[0]] = $line[1];
-			}
+			$headers[$line[0]] = $line[1];
 		}
 
 		$message = fgets($pointer);
 
 		return [
-			$path, $message, $fromSmsc, $headers
+			$path, $message, $headers
 		];
 	}
 
