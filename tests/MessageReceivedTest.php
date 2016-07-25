@@ -99,7 +99,7 @@ class MessageReceivedTest extends TestCase
 		MessageReceived::createFromPath($this->file->url());
 	}
 
-	public function testCreateMessageReceivedFromPath()
+	public function testCreateMessageRecievedFromPath()
 	{
 		$message = MessageReceived::createFromPath($this->file->url());
 
@@ -112,7 +112,7 @@ class MessageReceivedTest extends TestCase
 	}
 
 	/**
-	 * @depends testCreateMessageReceivedFromPath
+	 * @depends testCreateMessageRecievedFromPath
 	 */
 	public function testMessageReceivedMessagePropertyContent($message)
 	{
@@ -120,7 +120,7 @@ class MessageReceivedTest extends TestCase
 	}
 
 	/**
-	 * @depends testCreateMessageReceivedFromPath
+	 * @depends testCreateMessageRecievedFromPath
 	 */
 	public function testInvalidMessageHeader($message)
 	{
@@ -129,20 +129,12 @@ class MessageReceivedTest extends TestCase
 
 	/**
 	 * @dataProvider headerIterator
-	 * @depends testCreateMessageReceivedFromPath
+	 * @depends testCreateMessageRecievedFromPath
 	 */
 	public function testGetMessageHeader()
 	{
 		$args = func_get_args();
 
 		$this->assertSame($args[1], $args[2]->getHeader($args[0]));
-	}
-
-	/**
-	 * @depends  testCreateMessageReceivedFromPath
-	 */
-	public function testFromSmscHeaderIsPresent($message)
-	{
-		$this->assertNotNull($message->getHeader('From_SMSC'));
 	}
 }
