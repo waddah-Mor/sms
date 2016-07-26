@@ -6,6 +6,7 @@ use PHPUnit\Framework\TestCase;
 use org\bovigo\vfs\vfsStream;
 use org\bovigo\vfs\visitor\vfsStreamStructureVisitor;
 use Sms\Gateway;
+use Sms\Message;
 use Sms\MessageReceived;
 
 class GatewayTest extends TestCase
@@ -109,7 +110,7 @@ Not having signal indoors sucks. Use Three inTouch to call & text whenever you r
 	{
 		$this->root->getChild('spool/sms/incoming')->chmod(0000);
 
-		$message = $this->getMockBuilder("Sms\Message")
+		$message = $this->getMockBuilder(Message::class)
 			->disableOriginalConstructor()
 			->getMock();
 
