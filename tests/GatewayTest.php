@@ -130,12 +130,6 @@ Not having signal indoors sucks. Use Three inTouch to call & text whenever you r
 	{
 		$messages = $this->gateway->getIncoming(true);
 
-		$structure = vfsStream::inspect(
-			new vfsStreamStructureVisitor()
-		)->getStructure();
-
-		var_dump(get_class_methods(get_class($this->root)));
-
 		$this->assertEmpty(
 			$this->root->getChild('spool/sms/incoming')->getChildren()
 		);
