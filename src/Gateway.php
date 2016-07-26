@@ -89,7 +89,7 @@ class Gateway
 
 		if (
 			!file_exists($incomingDir)
-			|| !is_writable($incomingDir)
+			|| !is_readable($incomingDir)
 		) {
 			throw new SmsGatewayException(
 				"Incoming folder is not accessible."
