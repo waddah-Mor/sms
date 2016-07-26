@@ -78,6 +78,11 @@ class Message extends AbstractMessage implements MessageInterface
 		$this->to = $to;
 	}
 
+	/**
+	 * Flatten this down to a string, suitable for sending
+	 *
+	 * @return string
+	 */
 	public function flatten()
 	{
 		$str = "To: {$this->to}\n";

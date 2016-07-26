@@ -76,6 +76,13 @@ class Gateway
 		return $file;
 	}
 
+	/**
+	 * Get all incoming messages
+	 *
+	 * @param  boolean $expunge Do you wish to delete the messages once read?
+	 *
+	 * @return array
+	 */
 	public function getIncoming($expunge = false)
 	{
 		$incomingDir = $this->spoolDir . self::INCOMING_DIR;

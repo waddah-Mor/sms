@@ -29,6 +29,9 @@ class MessageTest extends TestCase
 		'System_message' => ''
 	];
 
+	/**
+	 * Proper blag test this
+	 */
 	public function testInstantiation()
 	{
 		$message = new Message(
