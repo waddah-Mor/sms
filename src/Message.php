@@ -2,16 +2,62 @@
 
 namespace Sms;
 
-final class Message extends AbstractMessage implements MessageInterface
+class Message extends AbstractMessage implements MessageInterface
 {
-	protected $message;
+	const HEADER_PARAMETERS = [
+		'To_TOA'         => [ 'type' => '' ],
+		'Flash'          => [ 'type' => '' ],
+		'Alphabet'       => [ 'type' => '' ],
+		'UDH'            => [ 'type' => '' ],
+		'UDH-DATA'       => [ 'type' => '' ],
+		'SMSC'           => [ 'type' => '' ],
+		'Provider Queue' => [ 'type' => '' ],
+		'Report'         => [ 'type' => '' ],
+		'Autosplit'      => [ 'type' => '' ],
+		'Priority'       => [ 'type' => '' ],
+		'Validity'       => [ 'type' => '' ],
+		'Voicecall'      => [ 'type' => '' ],
+		'Hex'            => [ 'type' => '' ],
+		'Replace'        => [ 'type' => '' ],
+		'Include'        => [ 'type' => '' ],
+		'Macro'          => [ 'type' => '' ],
+		'System_message' => [ 'type' => '' ]
+	];
+
+	/**
+	 * Message body
+	 *
+	 * @var string
+	 */
+	protected $body;
+
+	/**
+	 * Who to send the message to
+	 *
+	 * @var string
+	 */
 	protected $to;
+
+	/**
+	 * Optional headers
+	 *
+	 * @var \stdClass|null
+	 */
 	protected $headers;
 
-	public function __construct($message, $to, array $optHeaders = null)
+	/**
+	 * Class constructor
+	 *
+	 * @param string     $body
+	 * @param string     $to
+	 * @param array|null $optHeaders
+	 *
+	 * @return  Sms\Message
+	 */
+	public function __construct($body, $to, array $optHeaders = null)
 	{
-		$this->setMessage($message);
-		$this->setTo((array) $message);
+		$this->setBody($body);
+		$this->setTo($to);
 
 		if (!is_null($optHeaders)) {
 			foreach ($optHeaders as $header => $value) {
@@ -20,7 +66,28 @@ final class Message extends AbstractMessage implements MessageInterface
 		}
 	}
 
+	/**
+	 * Set To
+	 *
+	 * @param string $to
+	 *
+	 * @throws  Sms\SmsMessageException
+	 */
+	private function setTo($to = "")
+	{
+		$this->to = $to;
+	}
+
 	public function flatten()
 	{
+		$str = "To: {$this->to}\n";
+
+		if (!is_null($this->headers)) {
+			foreach ($this->headers as $header => $content) {
+				$str .= "{$header}: {$content}\n";
+			}
+		}
+
+		return $str . "\n{$this->body}";
 	}
 }

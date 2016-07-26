@@ -1,5 +1,7 @@
 <?php
 
+namespace SmsTest;
+
 use PHPUnit\Framework\TestCase;
 use Sms\MessageReceived;
 use Sms\SmsMessageException;

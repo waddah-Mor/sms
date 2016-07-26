@@ -5,11 +5,42 @@ namespace Sms;
 abstract class AbstractMessage implements MessageInterface
 {
 	/**
+	 * Set Body
+	 *
+	 * @param string $body
+	 *
+	 * @throws  Sms\SmsMessageException
+	 */
+	protected function setBody($body = "")
+	{
+		$this->body = $body;
+	}
+
+	/**
 	 * {@inheritDoc}
 	 */
 	public function getBody()
 	{
 		return $this->body;
+	}
+
+	/**
+	 * Set headers
+	 *
+	 * @param string $header
+	 * @param string $content
+	 */
+	protected function setHeader($header, $content)
+	{
+		if (is_null($this->headers)) {
+			$this->headers = new \stdClass;
+		}
+
+		if (!$this->validateHeader($header, $content)) {
+			return false;
+		}
+
+		$this->headers->{$header} = $content;
 	}
 
 	/**
@@ -35,9 +66,11 @@ abstract class AbstractMessage implements MessageInterface
 	 */
 	protected function validateHeader($header, $content)
 	{
-		if (!($properties = static::HEADER_PARAMETERS[$header])) {
+		if (!array_key_exists($header, static::HEADER_PARAMETERS)) {
 			return false;
 		}
+
+		$properties = static::HEADER_PARAMETERS[$header];
 
 		switch ($properties['type']) {
 			case 'stringsmall':

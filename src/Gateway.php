@@ -11,11 +11,27 @@ class Gateway
 	const OUTGOING_DIR = "/outgoing";
 	const SENT_DIR = "/sent";
 
+	const SERVICE_COMMAND = "service smstools status";
+
+	/**
+	 * Spool Dir
+	 *
+	 * @var string
+	 */
+	private $spoolDir;
+
+	/**
+	 * File Prefix
+	 *
+	 * @var string
+	 */
+	private $filePrefix;
+
 	/**
 	 * Class constructor
 	 *
-	 * @param string|null $spoolDir
-	 * @param array       $optParams
+	 * @param  string|null $spoolDir
+	 * @param  array       $optParams
 	 *
 	 * @return  Sms\Gateway
 	 *
@@ -23,16 +39,89 @@ class Gateway
 	 */
 	public function __construct(
 		$spoolDir = self::DEFAULT_SPOOL_DIR,
+		$filePrefix = "",
 		array $optParams = []
 	) {
+		$this->spoolDir   = $spoolDir;
+		$this->filePrefix = $filePrefix;
 	}
 
 	/**
 	 * Send SMS
 	 *
-	 * @param  MessageInterface $message
+	 * @param  Sms\Message $message
 	 */
 	public function send(Message $message)
 	{
+		$outgoingDir = $this->spoolDir . self::OUTGOING_DIR;
+		if (
+			!file_exists($outgoingDir)
+			|| !is_writable($outgoingDir)
+		) {
+			throw new SmsGatewayException(
+				"Outgoing folder is not accessible."
+			);
+		}
+
+		$file = tempnam($outgoingDir, $this->filePrefix);
+		$fp   = fopen($file, 'w');
+
+		fwrite(
+			$fp,
+			$message->flatten()
+		);
+
+		fclose($fp);
+
+		return $file;
+	}
+
+	public function getIncoming($expunge = false)
+	{
+		$incomingDir = $this->spoolDir . self::INCOMING_DIR;
+
+		if (
+			!file_exists($incomingDir)
+			|| !is_writable($incomingDir)
+		) {
+			throw new SmsGatewayException(
+				"Incoming folder is not accessible."
+			);
+		}
+
+		$iterator = new \RecursiveIteratorIterator(
+			new \RecursiveDirectoryIterator($incomingDir . "/"),
+			\RecursiveIteratorIterator::CHILD_FIRST
+		);
+
+		$messages = [];
+		foreach ($iterator as $file) {
+			if (preg_match('/GSM1\.[a-z0-9]/', $file->getFilename())) {
+				$messages[] = MessageReceived::createFromPath($file->getPathname());
+
+				if ($expunge) {
+					unlink($file->getPathname());
+				}
+			}
+		}
+
+		return $messages;
+	}
+
+	/**
+	 * Test to see if the sms service is running
+	 *
+	 * @return  true
+	 *
+	 * @throws  Sms\SmsGatewayException
+	 */
+	private function smsServiceIsRunning()
+	{
+		/* Remove once I work out system func mocking */
+		return true;
+
+		$status = shell_exec(self::SERVICE_COMMAND);
+
+		exit;
 	}
 }

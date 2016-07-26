@@ -93,35 +93,6 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	}
 
 	/**
-	 * Set body
-	 *
-	 * @param string $body
-	 */
-	private function setBody($body)
-	{
-		$this->body = $body;
-	}
-
-	/**
-	 * Set headers
-	 *
-	 * @param string $header
-	 * @param string $content
-	 */
-	private function setHeader($header, $content)
-	{
-		if (is_null($this->headers)) {
-			$this->headers = new \stdClass;
-		}
-
-		if (!$this->validateHeader($header, $content)) {
-			return false;
-		}
-
-		$this->headers->{$header} = $content;
-	}
-
-	/**
 	 * Iterate line-by-line over a file pointer and greedily parse what we can
 	 *
 	 * @param  resource $pointer
