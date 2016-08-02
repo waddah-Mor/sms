@@ -105,7 +105,7 @@ class Gateway
 
 		$messages = [];
 		foreach ($iterator as $file) {
-			if (preg_match('/GSM1\.[a-z0-9]/', $file->getFilename())) {
+			if (preg_match('/GSM1\.[a-z0-9]/i', $file->getFilename())) {
 				$messages[] = MessageReceived::createFromPath($file->getPathname());
 
 				if ($expunge) {
