@@ -73,6 +73,8 @@ class Gateway
 
 		fclose($fp);
 
+		chmod($file, 0777);
+
 		return $file;
 	}
 
