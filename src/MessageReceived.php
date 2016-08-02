@@ -60,14 +60,14 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 	 *
 	 * @var string
 	 */
-	protected $body;
+	public $body;
 
 	/**
 	 * SMS Headers
 	 *
 	 * @var stdClass
 	 */
-	protected $headers;
+	public $headers;
 
 	/**
 	 * Class constructor
@@ -123,6 +123,14 @@ class MessageReceived extends AbstractMessage implements MessageInterface
 
 		return [
 			$path, $body, $headers
+		];
+	}
+
+	public function flatten()
+	{
+		return (object) [
+			"body"    => $this->body,
+			"headers" => $this->headers
 		];
 	}
 
