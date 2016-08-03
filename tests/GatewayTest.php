@@ -160,4 +160,19 @@ Not having signal indoors sucks. Use Three inTouch to call & text whenever you r
 			$this->root->getChild('spool/sms/incoming')->getChildren()
 		);
 	}
+
+	/**
+     * @expectedException        Sms\SmsGatewayException
+     * @expectedExceptionMessage Unable to unlink sms
+	 */
+	public function testCannotExpungeReadMessages()
+	{
+		$this->root->getChild('spool/sms/incoming')->chmod(0400);
+
+		$messages = $this->gateway->getIncoming(true);
+
+		$this->assertEmpty(
+			$this->root->getChild('spool/sms/incoming')->getChildren()
+		);
+	}
 }

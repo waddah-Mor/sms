@@ -106,10 +106,16 @@ class Gateway
 		$messages = [];
 		foreach ($iterator as $file) {
 			if (preg_match('/GSM1\.[a-z0-9]/i', $file->getFilename())) {
-				$messages[] = MessageReceived::createFromPath($file->getPathname());
+				$path = $file->getPathname();
+				$messages[] = MessageReceived::createFromPath($path);
 
 				if ($expunge) {
-					unlink($file->getPathname());
+					unlink($path);
+					if (file_exists($path)) {
+						throw new SmsGatewayException(
+							"Unable to unlink sms: '{$path}'"
+						);
+					}
 				}
 			}
 		}
