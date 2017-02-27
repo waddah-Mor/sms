@@ -1,8 +1,9 @@
 <?php
 
-namespace Symfony\Component\HttpFoundation;
+namespace Sms;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\RequestMatcher;
 use Symfony\Component\HttpFoundation\RequestMatcherInterface;
 
 class RequestMatcherIps extends RequestMatcher
