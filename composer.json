@@ -1,0 +1,24 @@
+{
+    "name": "waddah-Mor/sms",
+    "description": "Simple wrapper for SMS Server Tools",
+    "require-dev": {
+        "phpunit/phpunit": "@stable",
+        "mikey179/vfsStream": "^1.6"
+    },
+    "require": {
+        "php": "^5.6 || ^7.0"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Liam Jones",
+            "email": "liam@plumbnation.co.uk",
+            "role": "Lead Developer"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Sms\\": "src/"
+        }
+    }
+}
