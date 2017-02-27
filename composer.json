@@ -1,5 +1,5 @@
 {
-    "name": "waddah-Mor/sms",
+    "name": "waddah-mor/sms",
     "description": "Simple wrapper for SMS Server Tools",
     "require-dev": {
         "phpunit/phpunit": "@stable",
