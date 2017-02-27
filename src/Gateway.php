@@ -79,6 +79,54 @@ class Gateway
 	}
 
 	/**
+	 * Get failed message
+	 *
+	 * @param  boolean $fail Do you wish to delete the messages once read?
+	 *
+	 * @return array
+	 */
+	public function getFailed($fail = false)
+	{
+
+		$failDir = $this->spoolDir . self::FAILED_DIR;
+
+		if (
+			!file_exists($failDir)
+			|| !is_readable($failDir)
+		) {
+			throw new SmsGatewayException(
+				"Failed folder is not accessible."
+			);
+		}
+
+		//getting path of last modified failed log file
+		$failDir .= '/';
+
+		$lastMod = 0;
+
+		foreach (scandir($failDir) as $entry) {
+		    if (is_file($failDir.$entry) && filectime($failDir.$entry) > $lastMod) {
+		        $lastMod = filectime($failDir.$entry);
+		    }
+		}
+
+		$path = $failDir.$entry; //full path to the last modified log file
+
+		$failedLog[] = MessageFailed::createFromPath($path);
+
+		if ($fail) {
+			unlink($path);
+			if (file_exists($path)) {
+				throw new SmsGatewayException(
+					"Unable to unlink failed log: '{$path}'"
+				);
+			}
+		}
+
+		return $failedLog;
+	}
+
+	/**
 	 * Get all incoming messages
 	 *
 	 * @param  boolean $expunge Do you wish to delete the messages once read?
